@@ -1,0 +1,37 @@
+<div class="wrapper" (resized)="onResized($event)">
+  <canvas id="canvasValue" class="canvas-size" #canvasEl></canvas>
+  <canvas id="canvasBG" class="canvas-size numeric-labels" #canvasBG></canvas>
+  <div class="timerBarContainer">
+    <button color="warn" *ngIf="!changingTarget" mat-flat-button class="timer-type-button" (click)="setTarget()">
+      Set Target
+    </button>
+    <button color="accent" *ngIf="changingTarget" mat-flat-button class="timer-type-button" (click)="runWithTarget()">
+      Run Target
+    </button>
+    <canvas id="canvasTarget" class="canvas-size" #canvasTgt></canvas>
+  </div>
+  <div class="timerControlContainer">
+    <div class="timer-button-groups timer-adjusters-group">
+      <button color="accent" mat-flat-button class="timer-adjust-buttons" (click)="remOneMin()">
+        <b>&and;</b>
+      </button>
+      <button color="accent" mat-flat-button class="timer-reset-button" (click)="resetTimer()">
+        Reset
+      </button>
+      <button color="accent" mat-flat-button class="timer-adjust-buttons" (click)="addOneMin()">
+        <b>&or;</b>
+      </button>
+    </div>
+    <div class="timer-button-groups timer-countdown-group">
+      <button color="warn" *ngIf="!timerRunning" mat-flat-button class="timer-start-button" (click)="startTimer()">
+        Start
+      </button>
+      <button color="accent" *ngIf="timerRunning" mat-flat-button class="timer-start-button" (click)="pauseTimer()">
+        Pause
+      </button>
+      <button color="warn" mat-flat-button class="timer-synch-button" (click)="roundToMin()">
+        Synch
+      </button>
+    </div>
+  </div>
+</div>

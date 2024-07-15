@@ -16,6 +16,7 @@ import { WidgetGaugeNgRadialComponent} from '../../widgets/widget-gauge-ng-radia
 import { WidgetAutopilotComponent } from "../../widgets/widget-autopilot/widget-autopilot.component";
 import { WidgetSimpleLinearComponent } from "../../widgets/widget-simple-linear/widget-simple-linear.component";
 import { WidgetRaceTimerComponent } from '../../widgets/widget-race-timer/widget-race-timer.component';
+import { WidgetRaceTimerAdvancedComponent } from '../../widgets/widget-race-timer-advanced/widget-race-timer-advanced.component';
 import { WidgetDataChartComponent } from '../../widgets/widget-data-chart/widget-data-chart.component';
 import { WidgetFreeboardskComponent } from '../../widgets/widget-freeboardsk/widget-freeboardsk.component';
 import { WidgetGaugeNgCompassComponent } from '../../widgets/widget-gauge-ng-compass/widget-gauge-ng-compass.component';
