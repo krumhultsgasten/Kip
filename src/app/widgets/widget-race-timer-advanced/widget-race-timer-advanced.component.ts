@@ -21,6 +21,7 @@ export class WidgetRaceTimerAdvancedComponent extends BaseWidgetComponent implem
   @ViewChild('canvasTgt', { static: true, read: ElementRef }) canvasTgt: ElementRef;
 
   dataValue: number = null;
+  targetTime = new Date();
   zoneState: string = null;
   currentValueLength: number = 0; // length (in characters) of value text to be displayed. if changed from last time, need to recalculate font size...
   valueFontSize: number = 1;
@@ -43,23 +44,8 @@ export class WidgetRaceTimerAdvancedComponent extends BaseWidgetComponent implem
     super();
 
     this.defaultConfig = {
-      displayName: 'Timer Label',
       timerLength: 300,
       textColor: 'text',
-      filterSelfPaths: true,
-      paths: {
-        "timerPath": {
-          description: "Numeric Data",
-          path: null,
-          source: null,
-          pathType: "number",
-          isPathConfigurable: true,
-          showPathSkUnitsFilter: true,
-          pathSkUnitsFilter: null,
-          convertUnitTo: "unitless",
-          sampleTime: 500
-        }
-      }
     };
   }
 
@@ -92,7 +78,7 @@ export class WidgetRaceTimerAdvancedComponent extends BaseWidgetComponent implem
       this.currentValueLength = 0; //will force resetting the font size
       this.updateCanvas();
       this.updateCanvasBG();
-      this.updateCanvasTgt();
+      //  this.updateCanvasTgt();
     }
 
   }
@@ -104,6 +90,7 @@ export class WidgetRaceTimerAdvancedComponent extends BaseWidgetComponent implem
     this.timerSub = this.TimersService.createTimer(this.timeName, -3000, 100).subscribe(
       newValue => {
         this.dataValue = newValue;
+        this.targetTime.setTime(Date.now() - newValue * 100);
 
         if (newValue > 0) {
           this.zoneState = States.Normal;
@@ -241,6 +228,7 @@ export class WidgetRaceTimerAdvancedComponent extends BaseWidgetComponent implem
   updateCanvas() {
     if (this.canvasCtx) {
       this.canvasCtx.clearRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
+      this.canvasTgtCtx.clearRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
       this.drawValue();
     }
   }
@@ -252,35 +240,42 @@ export class WidgetRaceTimerAdvancedComponent extends BaseWidgetComponent implem
     }
   }
 
-  updateCanvasTgt() {
-    if (this.canvasTgtCtx) {
-      this.canvasTgtCtx.clearRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
-      this.drawTarget();
-    }
-  }
+  // updateCanvasTgt() {
+  //   if (this.canvasTgtCtx) {
+  //     this.canvasTgtCtx.clearRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
+  //     this.drawTarget();
+  //   }
+  // }
 
   drawValue() {
-    let maxTextWidth = Math.floor(this.canvasEl.nativeElement.width - (this.canvasEl.nativeElement.width * 0.15));
+    let maxTextWidth = Math.floor(this.canvasEl.nativeElement.width - (this.canvasEl.nativeElement.width * 0.2));
     let maxTextHeight = Math.floor(this.canvasEl.nativeElement.height - (this.canvasEl.nativeElement.height * 0.2));
     let valueText: string;
+    let targetText: string;
+
+    if (this.targetTime != null) {
+
+      let hh = this.targetTime.getHours();
+      let mm = this.targetTime.getMinutes();
+      let ss = this.targetTime.getSeconds();
+      targetText = ('0' + hh).slice(-2) + ":" + ('0' + mm).slice(-2) + ":" + ('0' + ss).slice(-2);
+    } else {
+      targetText = "--:--:--";
+    }
 
     if (this.dataValue != null) {
 
-      let v = this.dataValue;
-      if (this.dataValue < 0) { v = v * -1 } // always positive
+      let v = Math.abs(this.dataValue);
 
       let m = Math.floor(v / 600);
       let s = Math.floor(v % 600 / 10);
       let d = Math.floor(v % 600 % 10);
-      valueText = m + ":" + ('0' + s).slice(-2) + "." + d;
-
-      if (this.dataValue < 0) {
-        valueText = "-" + valueText;
-      }
-
+      let sign = this.dataValue < 0 ? "-" : " ";
+      valueText = sign + m + ":" + ('0' + s).slice(-2) + "." + d;
     } else {
       valueText = "--";
     }
+
     //check if length of string has changed since laste time.
     if (this.currentValueLength != valueText.length) {
       //we need to set font size...
@@ -288,21 +283,21 @@ export class WidgetRaceTimerAdvancedComponent extends BaseWidgetComponent implem
 
       // start with large font, no sense in going bigger than the size of the canvas :)
       this.valueFontSize = maxTextHeight;
-      this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
+      this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Courier";
       let measure = this.canvasCtx.measureText(valueText).width;
 
       // if we are not too wide, we stop there, maxHeight was our limit... if we're too wide, we need to scale back
       if (measure > maxTextWidth) {
         let estimateRatio = maxTextWidth / measure;
         this.valueFontSize = Math.floor(this.valueFontSize * estimateRatio);
-        this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
+        this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Courier";
       }
       // now decrease by 1 to in case still too big
       let loopCount = 0;
       while (this.canvasCtx.measureText(valueText).width > maxTextWidth && this.valueFontSize > 0) {
         loopCount++;
         this.valueFontSize--;
-        this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
+        this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Courier";
       }
       // console.log(`Recalculated font size, loops: ${loopCount}`);
     }
@@ -313,103 +308,39 @@ export class WidgetRaceTimerAdvancedComponent extends BaseWidgetComponent implem
 
         if (this.flashOn) {
           this.canvasCtx.fillStyle = this.textColor;
+          this.canvasTgtCtx.fillStyle = this.textColor;
         } else {
           // draw background
           this.canvasCtx.fillStyle = this.warnColor;
           this.canvasCtx.fillRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
           // text color
           this.canvasCtx.fillStyle = this.textColor;
+          this.canvasTgtCtx.fillStyle = this.textColor;
         }
         break;
 
       case States.Warn:
         this.canvasCtx.fillStyle = this.warnColor;
-        break;
-
-      default:
-        this.canvasCtx.fillStyle = this.textColor;
-    }
-
-    this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
-    this.canvasCtx.textAlign = "center";
-    this.canvasCtx.textBaseline = "middle";
-    this.canvasCtx.fillText(valueText, this.canvasEl.nativeElement.width / 2, (this.canvasEl.nativeElement.height * 0.45) + (this.valueFontSize / 15), maxTextWidth);
-  }
-
-  drawTarget() {
-    let maxTextWidth = Math.floor(this.canvasEl.nativeElement.width - (this.canvasEl.nativeElement.width * 0.15));
-    let maxTextHeight = Math.floor(this.canvasEl.nativeElement.height - (this.canvasEl.nativeElement.height * 0.2));
-    let valueText: string;
-
-    if (this.dataValue != null) {
-
-      let v = this.dataValue;
-      if (this.dataValue < 0) { v = v * -1 } // always positive
-
-      let m = Math.floor(v / 600);
-      let s = Math.floor(v % 600 / 10);
-      let d = Math.floor(v % 600 % 10);
-      valueText = m + ":" + ('0' + s).slice(-2) + "." + d;
-
-      if (this.dataValue < 0) {
-        valueText = "-" + valueText;
-      }
-
-    } else {
-      valueText = "--";
-    }
-    //check if length of string has changed since laste time.
-    if (this.currentValueLength != valueText.length) {
-      //we need to set font size...
-      this.currentValueLength = valueText.length;
-
-      // start with large font, no sense in going bigger than the size of the canvas :)
-      this.valueFontSize = maxTextHeight;
-      this.canvasTgtCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
-      let measure = this.canvasTgtCtx.measureText(valueText).width;
-
-      // if we are not too wide, we stop there, maxHeight was our limit... if we're too wide, we need to scale back
-      if (measure > maxTextWidth) {
-        let estimateRatio = maxTextWidth / measure;
-        this.valueFontSize = Math.floor(this.valueFontSize * estimateRatio);
-        this.canvasTgtCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
-      }
-      // now decrease by 1 to in case still too big
-      let loopCount = 0;
-      while (this.canvasTgtCtx.measureText(valueText).width > maxTextWidth && this.valueFontSize > 0) {
-        loopCount++;
-        this.valueFontSize--;
-        this.canvasTgtCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
-      }
-      // console.log(`Recalculated font size, loops: ${loopCount}`);
-    }
-
-    // get color based on zone
-    switch (this.zoneState) {
-      case States.Alarm:
-
-        if (this.flashOn) {
-          this.canvasTgtCtx.fillStyle = this.textColor;
-        } else {
-          // draw background
-          this.canvasTgtCtx.fillStyle = this.warnColor;
-          this.canvasTgtCtx.fillRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
-          // text color
-          this.canvasTgtCtx.fillStyle = this.textColor;
-        }
-        break;
-
-      case States.Warn:
         this.canvasTgtCtx.fillStyle = this.warnColor;
         break;
 
       default:
+        this.canvasCtx.fillStyle = this.textColor;
         this.canvasTgtCtx.fillStyle = this.textColor;
     }
 
-    this.canvasTgtCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
+    this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Courier";
+    this.canvasCtx.textAlign = "center";
+    this.canvasCtx.textBaseline = "middle";
+    this.canvasCtx.fillText(valueText, this.canvasEl.nativeElement.width / 2, (this.canvasEl.nativeElement.height * 0.45) + (this.valueFontSize / 15), maxTextWidth);
+
+    let targetFontSize = this.valueFontSize / 4;
+
+    this.canvasTgtCtx.font = "bold " + targetFontSize.toString() + "px Courier";
     this.canvasTgtCtx.textAlign = "center";
     this.canvasTgtCtx.textBaseline = "middle";
-    this.canvasTgtCtx.fillText(valueText, this.canvasEl.nativeElement.width / 2, (this.canvasEl.nativeElement.height * 0.45) + (this.valueFontSize / 15), maxTextWidth);
+    this.canvasTgtCtx.fillText(targetText, this.canvasEl.nativeElement.width / 2, (this.canvasEl.nativeElement.height * 0.45) + (this.valueFontSize / 15), maxTextWidth);
+
+
   }
 }

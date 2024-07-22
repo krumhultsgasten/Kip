@@ -1,0 +1,11 @@
+clinometer-gauge.clinometerGauge {
+  position: relative;
+  top: 2%;
+}
+
+.ngClinometerWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}

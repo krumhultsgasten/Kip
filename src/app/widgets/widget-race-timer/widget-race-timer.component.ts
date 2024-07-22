@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy,ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ResizedEvent, AngularResizeEventModule } from 'angular-resize-event';
 
@@ -9,15 +9,15 @@ import { NgIf } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 
 @Component({
-    selector: 'app-widget-race-timer',
-    templateUrl: './widget-race-timer.component.html',
-    styleUrls: ['./widget-race-timer.component.scss'],
-    standalone: true,
-    imports: [AngularResizeEventModule, MatButton, NgIf]
+  selector: 'app-widget-race-timer',
+  templateUrl: './widget-race-timer.component.html',
+  styleUrls: ['./widget-race-timer.component.scss'],
+  standalone: true,
+  imports: [AngularResizeEventModule, MatButton, NgIf]
 })
 export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnInit, OnDestroy {
-  @ViewChild('canvasEl', {static: true, read: ElementRef}) canvasEl: ElementRef;
-  @ViewChild('canvasBG', {static: true, read: ElementRef}) canvasBG: ElementRef;
+  @ViewChild('canvasEl', { static: true, read: ElementRef }) canvasEl: ElementRef;
+  @ViewChild('canvasBG', { static: true, read: ElementRef }) canvasBG: ElementRef;
 
   dataValue: number = null;
   zoneState: string = null;
@@ -88,21 +88,21 @@ export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnI
         } else if (newValue > -100) {
           this.zoneState = States.Alarm;
         } else if (newValue > -300) {
-          this.zoneState =States.Warn;
+          this.zoneState = States.Warn;
         } else {
           this.zoneState = States.Normal;
         }
 
-       //start flashing if alarm
-       if (this.zoneState == States.Alarm && !this.flashInterval) {
-        this.flashInterval = setInterval(() => {
-          this.flashOn = !this.flashOn;
-          this.updateCanvas();
-        }, 500); // used to flash stuff in alarm
-      } else if (this.zoneState != States.Alarm) {
-        // stop alarming if not in alarm state
-        clearInterval(this.flashInterval);
-      }
+        //start flashing if alarm
+        if (this.zoneState == States.Alarm && !this.flashInterval) {
+          this.flashInterval = setInterval(() => {
+            this.flashOn = !this.flashOn;
+            this.updateCanvas();
+          }, 500); // used to flash stuff in alarm
+        } else if (this.zoneState != States.Alarm) {
+          // stop alarming if not in alarm state
+          clearInterval(this.flashInterval);
+        }
         this.updateCanvas();
       }
     );
@@ -127,7 +127,7 @@ export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnI
 
   public roundToMin() {
     let v = this.dataValue;
-    if (this.dataValue < 0) { v = v * -1} // always positive
+    if (this.dataValue < 0) { v = v * -1 } // always positive
     let seconds = v % 600;
 
     if (this.dataValue > 0) {
@@ -146,11 +146,11 @@ export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnI
   }
 
   addOneMin() {
-      this.TimersService.setTimer(this.timeName, this.dataValue + 600);
+    this.TimersService.setTimer(this.timeName, this.dataValue + 600);
   }
 
   remOneMin() {
-      this.TimersService.setTimer(this.timeName, this.dataValue - 600);
+    this.TimersService.setTimer(this.timeName, this.dataValue - 600);
   }
 
   private getColors(themeColor: string) {
@@ -188,7 +188,7 @@ export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnI
   }
 
   private unsubscribeTimer() {
-      this.timerSub?.unsubscribe();
+    this.timerSub?.unsubscribe();
   }
 
   ngOnDestroy() {
@@ -196,25 +196,25 @@ export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnI
     clearInterval(this.flashInterval);
   }
 
-/* ******************************************************************************************* */
-/* ******************************************************************************************* */
-/* ******************************************************************************************* */
-/*                                  Canvas                                                     */
-/* ******************************************************************************************* */
-/* ******************************************************************************************* */
-/* ******************************************************************************************* */
+  /* ******************************************************************************************* */
+  /* ******************************************************************************************* */
+  /* ******************************************************************************************* */
+  /*                                  Canvas                                                     */
+  /* ******************************************************************************************* */
+  /* ******************************************************************************************* */
+  /* ******************************************************************************************* */
 
 
   updateCanvas() {
     if (this.canvasCtx) {
-      this.canvasCtx.clearRect(0,0,this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
+      this.canvasCtx.clearRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
       this.drawValue();
     }
   }
 
   updateCanvasBG() {
     if (this.canvasBGCtx) {
-      this.canvasBGCtx.clearRect(0,0,this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
+      this.canvasBGCtx.clearRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
 
     }
   }
@@ -227,7 +227,7 @@ export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnI
     if (this.dataValue != null) {
 
       let v = this.dataValue;
-      if (this.dataValue < 0) { v = v * -1} // always positive
+      if (this.dataValue < 0) { v = v * -1 } // always positive
 
       let m = Math.floor(v / 600);
       let s = Math.floor(v % 600 / 10);
@@ -276,7 +276,7 @@ export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnI
         } else {
           // draw background
           this.canvasCtx.fillStyle = this.warnColor;
-          this.canvasCtx.fillRect(0,0,this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
+          this.canvasCtx.fillRect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
           // text color
           this.canvasCtx.fillStyle = this.textColor;
         }
@@ -292,7 +292,7 @@ export class WidgetRaceTimerComponent extends BaseWidgetComponent implements OnI
 
     this.canvasCtx.font = "bold " + this.valueFontSize.toString() + "px Arial";
     this.canvasCtx.textAlign = "center";
-    this.canvasCtx.textBaseline="middle";
-    this.canvasCtx.fillText(valueText,this.canvasEl.nativeElement.width/2,(this.canvasEl.nativeElement.height * 0.45)+(this.valueFontSize/15), maxTextWidth);
+    this.canvasCtx.textBaseline = "middle";
+    this.canvasCtx.fillText(valueText, this.canvasEl.nativeElement.width / 2, (this.canvasEl.nativeElement.height * 0.45) + (this.valueFontSize / 15), maxTextWidth);
   }
 }

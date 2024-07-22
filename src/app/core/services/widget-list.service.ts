@@ -11,8 +11,8 @@ import { WidgetButtonComponent } from '../../widgets/widget-button/widget-button
 import { WidgetBooleanSwitchComponent } from '../../widgets/widget-boolean-switch/widget-boolean-switch.component'
 import { WidgetIframeComponent } from '../../widgets/widget-iframe/widget-iframe.component';
 import { WidgetTutorialComponent } from '../../widgets/widget-tutorial/widget-tutorial.component';
-import { WidgetGaugeNgLinearComponent} from '../../widgets/widget-gauge-ng-linear/widget-gauge-ng-linear.component';
-import { WidgetGaugeNgRadialComponent} from '../../widgets/widget-gauge-ng-radial/widget-gauge-ng-radial.component';
+import { WidgetGaugeNgLinearComponent } from '../../widgets/widget-gauge-ng-linear/widget-gauge-ng-linear.component';
+import { WidgetGaugeNgRadialComponent } from '../../widgets/widget-gauge-ng-radial/widget-gauge-ng-radial.component';
 import { WidgetAutopilotComponent } from "../../widgets/widget-autopilot/widget-autopilot.component";
 import { WidgetSimpleLinearComponent } from "../../widgets/widget-simple-linear/widget-simple-linear.component";
 import { WidgetRaceTimerComponent } from '../../widgets/widget-race-timer/widget-race-timer.component';
@@ -20,6 +20,7 @@ import { WidgetRaceTimerAdvancedComponent } from '../../widgets/widget-race-time
 import { WidgetDataChartComponent } from '../../widgets/widget-data-chart/widget-data-chart.component';
 import { WidgetFreeboardskComponent } from '../../widgets/widget-freeboardsk/widget-freeboardsk.component';
 import { WidgetGaugeNgCompassComponent } from '../../widgets/widget-gauge-ng-compass/widget-gauge-ng-compass.component';
+import { WidgetGaugeNgClinometerComponent } from '../../widgets/widget-gauge-ng-clinometer/widget-gauge-ng-clinometer.component';
 
 class widgetInfo {
   name: string;
@@ -96,6 +97,11 @@ export class WidgetListService {
         name: 'WidgetGaugeComponent',
         componentName: WidgetGaugeComponent,
         description: "Linear & Radial Steel Style"
+      },
+      {
+        name: 'WidgetGaugeNgClinometerComponent',
+        componentName: WidgetGaugeNgClinometerComponent,
+        description: "Clinometer"
       }
     ],
     'Component': [
@@ -120,9 +126,14 @@ export class WidgetListService {
         description: 'Data Chart',
       },
       {
-          name: 'WidgetRaceTimerComponent',
-          componentName: WidgetRaceTimerComponent,
-          description: "Race Timer"
+        name: 'WidgetRaceTimerComponent',
+        componentName: WidgetRaceTimerComponent,
+        description: "Race Timer"
+      },
+      {
+        name: 'WidgetRaceTimerAdvancedComponent',
+        componentName: WidgetRaceTimerAdvancedComponent,
+        description: "Race Timer Advanced"
       },
       {
         name: 'WidgetIframeComponent',
@@ -146,7 +157,7 @@ export class WidgetListService {
   }
 
 
-  getList (){
+  getList() {
     return this.widgetList;
   }
 }

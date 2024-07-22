@@ -1,0 +1,4 @@
+<div class="ngClinometerWrapper" #ngClinometerWrapperDiv (resized)="onResized($event)">
+  <radial-gauge class="clinometerGauge" id="{{widgetProperties.uuid}}" #clinometerGauge [options]="gaugeOptions"
+    [value]="value"></radial-gauge>
+</div>
